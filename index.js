@@ -6,6 +6,7 @@ import router from './controllers/orderController.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+mongoCon();
 
 // =======================
 // Middleware
