@@ -6,7 +6,6 @@ import router from './controllers/orderController.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-mongoCon();
 
 // =======================
 // Middleware
@@ -16,8 +15,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // =======================
-// Health Check Endpoint
+// Root & Health Check
 // =======================
+app.get("/", (req, res) => {
+  res.json({ success: true, message: "Backend Sahur App is running" });
+});
+
 app.get("/health", (req, res) => {
   res.json({ status: "OK", timestamp: new Date().toISOString() });
 });
@@ -28,8 +31,15 @@ app.get("/health", (req, res) => {
 app.use('/', router);
 
 // =======================
-// Start Server
+// Start Server after MongoDB connects
 // =======================
-app.listen(PORT, () => {
-    console.log(`App is listening on ${PORT}`);
-});
+mongoCon()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`App is listening on ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error("Failed to start server:", err);
+    process.exit(1); // hentikan proses jika MongoDB gagal connect
+  });
